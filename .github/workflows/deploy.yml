@@ -28,7 +28,7 @@ jobs:
       - name: Deploy to Remote Server
         run: |
           ssh -o StrictHostKeyChecking=no -i <(echo "${{ secrets.SSH_PRIVATE_KEY }}") user@remote-server-ip "
-            cd /var/www/my-app &&
+            cd /var/www/my-web-app &&
             git fetch origin main &&
             git reset --hard origin/main
           "
