@@ -3,7 +3,7 @@ name: Deploy to Remote Server
 on:
   push:
     branches:
-      - main  # Trigger deployment on push to the main branch
+      - main
 
 jobs:
   deploy:
@@ -18,11 +18,17 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+      - name: Debug SSH Key
+        run: |
+          echo "Private key:"
+          echo "${{ secrets.SSH_PRIVATE_KEY }}"
+          echo "Public key:"
+          ssh-keygen -y -f <(echo "${{ secrets.SSH_PRIVATE_KEY }}")
+
       - name: Deploy to Remote Server
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "
+          ssh -o StrictHostKeyChecking=no -i <(echo "${{ secrets.SSH_PRIVATE_KEY }}") user@remote-server-ip "
             cd /var/www/my-app &&
             git fetch origin main &&
-            git reset --hard origin/main &&
-            # Add any additional deployment commands here, e.g., restarting services
+            git reset --hard origin/main
           "
